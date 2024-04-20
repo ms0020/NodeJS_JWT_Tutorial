@@ -1,10 +1,15 @@
 import jwt from 'jsonwebtoken';
 
-function jwtTokens({user_id, user_name, user_email}) {
-    const user = {user_id, user_name, user_email};
-    const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn:'6m'});
-    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {expiresIn:'5m'});
-    return ({accessToken, refreshToken});
-};
+function jwtTokens({user_id,user_name,user_email}) {
+    const user = {user_id,user_name,user_email};
+    console.log(process.env.ACCESS_TOKEN_SECRET)
+    const accessToken = jwt.sign(user,'ver55nyt56gfeb4tn84',{expiresIn:'5m'});
+    const refreshToken = jwt.sign(user,'61f84g4r3g65g16egr',{expiresIn:'5m'});
+    console.log("access token = ",accessToken)
+    console.log("refresh token =",refreshToken)
+    return ({accessToken,refreshToken});
+
+
+}
 
 export {jwtTokens};

@@ -1,15 +1,14 @@
-import express from 'express';
 import pool from '../db.js';
+import queries from './queries.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { jwtTokens } from '../utils/jwt-helpers.js';
+import {jwtTokens} from '../utils/jwt-helpers.js';
 
-const router = express.Router();
 
-router.post('/login', async (req, res) => {
+const userLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const users = await pool.query('SELECT * FROM users WHERE user_email = $1', [email]);
+        const users = await pool.query(queries.userLogin, [email]);
         if (users.rows.length === 0) return res.status(401).json({ error: "Email is incorrect." });
         // Password Check
         const validPassword = await bcrypt.compare(password, users.rows[0].user_password);
@@ -24,9 +23,9 @@ router.post('/login', async (req, res) => {
     } catch (error) {
         res.status(401).json({ error: error.message });
     };
-});
+};
 
-router.get('/refresh_token', (req, res) => {
+const refToken = async (req, res) => {
     try {
         const refreshToken = req.cookies.refresh_token;
         if (refreshToken === null) return res.status(401), json({ error: 'Null refresh token.' });
@@ -39,17 +38,15 @@ router.get('/refresh_token', (req, res) => {
     } catch (error) {
         res.status(401).json({ error: error.message });
     }
-});
+};
 
-
-router.delete('/refresh_token', (req, res) => {
+const deleteToken = async (req, res) => {
     try {
         res.clearCookie('refresh_token');
-        return res.status(200).json({message: 'refresh token deleted.'});
+        return res.status(200).json({ message: 'refresh token deleted.' });
     } catch (error) {
         res.status(401).json({ error: error.message });
     }
-})
+};
 
-
-export default router;
+export default { userLogin, refToken, deleteToken };
